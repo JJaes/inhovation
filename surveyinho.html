@@ -1,0 +1,305 @@
+<!Doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script type="text/javascript" src="./lib/bignumber.min.js"></script>
+<script type="text/javascript" src="./lib/web3-light.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https:/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script type="text/javascript">
+       
+    var Web3 = require('web3');
+    var web3 = new Web3();
+    var version = web3.version.api;
+    web3.setProvider(new web3.providers.HttpProvider("http://localhost:8545"));
+    var contractAddress = "0x756e67413b00cff4bb10fead84c1aac4dd93c4ac";
+    var password        = "1234";
+
+    var vc = web3.eth.contract([ { "constant": true, "inputs": [ { "name": "_respondent", "type": "address" } ], "name": "getAnswer", "outputs": [ { "name": "rs", "type": "uint256" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "", "type": "address" } ], "name": "answerList", "outputs": [ { "name": "toAddr", "type": "address" }, { "name": "select1", "type": "uint256" }, { "name": "select2", "type": "uint256" }, { "name": "select3", "type": "uint256" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "_respondent", "type": "address" }, { "name": "_select1", "type": "uint256" }, { "name": "_select2", "type": "uint256" }, { "name": "_select3", "type": "uint256" } ], "name": "addAnswer", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [], "name": "doneAnswer", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [], "name": "Totprice", "outputs": [ { "name": "", "type": "uint256" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "", "type": "uint256" } ], "name": "surveyList", "outputs": [ { "name": "surId", "type": "uint256" }, { "name": "question", "type": "bytes32" }, { "name": "example1", "type": "bytes32" }, { "name": "example2", "type": "bytes32" }, { "name": "example3", "type": "bytes32" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "_surId", "type": "uint256" } ], "name": "getExample3", "outputs": [ { "name": "rs", "type": "string" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "currentBalane", "outputs": [ { "name": "", "type": "uint256" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "survey", "outputs": [ { "name": "surId", "type": "uint256" }, { "name": "question", "type": "bytes32" }, { "name": "example1", "type": "bytes32" }, { "name": "example2", "type": "bytes32" }, { "name": "example3", "type": "bytes32" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "participants", "outputs": [ { "name": "", "type": "uint256" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "answer", "outputs": [ { "name": "toAddr", "type": "address" }, { "name": "select1", "type": "uint256" }, { "name": "select2", "type": "uint256" }, { "name": "select3", "type": "uint256" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "_surId", "type": "uint256" } ], "name": "getSurvey", "outputs": [ { "name": "rs", "type": "string" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "_surId", "type": "uint256" }, { "name": "_question", "type": "bytes32" }, { "name": "_example1", "type": "bytes32" }, { "name": "_example2", "type": "bytes32" }, { "name": "_example3", "type": "bytes32" } ], "name": "addSurvey", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [ { "name": "_price", "type": "uint256" }, { "name": "_participants", "type": "uint256" } ], "name": "commission", "outputs": [], "payable": true, "stateMutability": "payable", "type": "function" }, { "constant": true, "inputs": [], "name": "price", "outputs": [ { "name": "", "type": "uint256" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "_surId", "type": "uint256" } ], "name": "getExample2", "outputs": [ { "name": "rs", "type": "string" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "amount", "outputs": [ { "name": "", "type": "uint256" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "finished", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "_surId", "type": "uint256" } ], "name": "getExample1", "outputs": [ { "name": "rs", "type": "string" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "inputs": [], "payable": false, "stateMutability": "nonpayable", "type": "constructor" } ]).at(contractAddress);
+
+     function commission(){
+        var price = document.getElementById("price").value;
+        var participants = document.getElementById("participants").value;
+
+        if(web3.personal.unlockAccount(web3.eth.accounts[0], password, 0)){
+            vc.commission(price, participants, {from:web3.eth.accounts[0], value : price * 1000000000000000000}, function(err,result){});
+        }
+    }
+
+    function convertByte32(str) {
+        var ret = "";
+
+        for(var i=0 ; i<66 ; i++) {
+            if(i<2)
+                ret = ret + str[i];
+            else if(i<(66-str.length)+2)
+                ret = ret + "0";
+            else
+                ret = ret + str[i-(66-str.length)];
+        }
+
+        return ret;
+    }
+
+    function addSurvey(){
+        for(var i=1 ; i<4 ; i++) {
+            var surId = i;
+            var question = convertByte32(web3.fromAscii(document.getElementById("question"+surId).value));
+            var example1 = convertByte32(web3.fromAscii(document.getElementById("example"+surId+"1").value));
+            var example2 = convertByte32(web3.fromAscii(document.getElementById("example"+surId+"2").value));
+            var example3 = convertByte32(web3.fromAscii(document.getElementById("example"+surId+"3").value));
+
+            if(web3.personal.unlockAccount(web3.eth.accounts[0], password, 0)){
+                vc.addSurvey.sendTransaction(surId, question, example1, example2, example3, {from:web3.eth.accounts[0]},function(err,result){});
+            }
+        }
+    }
+
+    function getSurvey(){
+        var result = vc.getSurvey(document.getElementById("surNum").value);
+        alert(result);
+    }
+
+    // 잔고를 출력합니다.
+    function refreshBalance() { 
+        // tablePlace를 초기화하고 계좌수 만큼 테이블의 행을 생성합니다.
+        document.getElementById("tablePlace").innerText = " ";
+        var idiv = document.createElement('div');
+        document.getElementById("tablePlace").appendChild(idiv);
+        var list = web3.eth.accounts;
+        var total = 0;
+        var input ="<table>";
+        for(var i = 0; i<list.length; i++){
+            var tempB= parseFloat(web3.fromWei(web3.eth.getBalance(list[i]),"ether"));
+            input +="<tr><td>"+ list[i] + "</td><td>" + tempB +" ETHER</td></tr>";
+            total+=tempB;
+        }
+        input +="<tr><td><strong> TOTAL </strong></td><td><strong>" + total +" ETHER</strong></td></tr></table>";
+        idiv.innerHTML = input;    
+//        web3.eth.filter('latest').watch(function() { refreshBalance();});
+    }
+
+    function refreshQuestion() { 
+        document.getElementById("Question1").innerText = vc.getSurvey(1);
+        var idiv1 = document.createElement('div');
+        document.getElementById("Question1").appendChild(idiv1);
+        var input = "";
+        input +="<input id=Answer1 type=radio name=question_A1 value=1> " +vc.getExample1(1) + "<br>";
+        input +="<input id=Answer2 type=radio name=question_A1 value=2> " +vc.getExample2(1) + "<br>";
+        input +="<input id=Answer3 type=radio name=question_A1 value=3> " +vc.getExample3(1) + "<br>";
+
+        input +="<br><br>";
+        idiv1.innerHTML = input;
+        
+        document.getElementById("Question2").innerText =vc.getSurvey(2);
+        idiv2 = document.createElement('div');
+        document.getElementById("Question2").appendChild(idiv2);
+        input = "";
+        input +="<input id=Answer1 type=radio name=question_A2 value=1> " +vc.getExample1(2) + "<br>";
+        input +="<input id=Answer2 type=radio name=question_A2 value=2> " +vc.getExample2(2) + "<br>";
+        input +="<input id=Answer3 type=radio name=question_A2 value=3> " +vc.getExample3(2) + "<br>";
+
+        input +="<br><br>";
+        idiv2.innerHTML = input;
+        
+        document.getElementById("Question3").innerText = vc.getSurvey(3);
+        idiv3 = document.createElement('div');
+        document.getElementById("Question3").appendChild(idiv3);
+        input = "";
+        input +="<input id=Answer1 type=radio name=question_A3 value=1> " +vc.getExample1(3) + "<br>";
+        input +="<input id=Answer2 type=radio name=question_A3 value=2> " +vc.getExample2(3) + "<br>";
+        input +="<input id=Answer3 type=radio name=question_A3 value=3> " +vc.getExample3(3) + "<br>";
+
+        idiv3.innerHTML = input;
+        
+        document.getElementById("answerDone").innerText = "----------------";
+        idiv4 = document.createElement('div');
+        document.getElementById("answerDone").appendChild(idiv4);
+        input ="<button onClick=\"javascript:answer()\">설문완료</button></h4>";
+        idiv4.innerHTML = input;
+    }
+
+    function getAnswer(){
+        var result1 = vc.getAnswer(web3.eth.accounts[1]);
+        var result2 = vc.getAnswer(web3.eth.accounts[2]);
+        
+        document.getElementById("Answer1").innerText = "설문자 : " + web3.eth.accounts[1];
+        var idiv1 = document.createElement('div');
+        document.getElementById("Answer1").appendChild(idiv1);
+        var input = "답변 : ";
+        
+        input += result1;
+        input +="<br>";
+        idiv1.innerHTML = input;
+
+        if(result2>0){
+            document.getElementById("Answer2").innerText = "설문자 : " + web3.eth.accounts[2];
+            idiv1 = document.createElement('div');
+            document.getElementById("Answer2").appendChild(idiv1);
+            input = "답변 : ";
+        
+            input += result2;
+            input +="<br>";
+            idiv1.innerHTML = input;
+        }
+    }
+
+    // 사용자의 지갑들을 select로 만듭니다.
+    function makeSelect() { 
+        var list = web3.eth.accounts;
+        var select =  document.getElementById('client');
+        for(var i = 0; i<list.length; i++){
+            var opt=document.createElement('option');
+            opt.value = list[i];
+            opt.innerHTML = list[i];
+            select.appendChild(opt);
+        }
+        var select =  document.getElementById('respondent');
+        for(var i = 0; i<list.length; i++){
+            var opt=document.createElement('option');
+            opt.value = list[i];
+            opt.innerHTML = list[i];
+            select.appendChild(opt);
+        }
+    }
+
+    function answer(){ 
+        with(document.all){
+            var _respondent = document.getElementById('respondent').value;
+            var _password = document.getElementById('pass').value;
+        
+            var _select1, _select2, _select3;
+            for(var i=0;i<question_A1.length;i++){
+                if(question_A1[i].checked==true)
+                    _select1 = question_A1[i].value;
+            }
+            for(var i=0;i<question_A2.length;i++){
+                if(question_A2[i].checked==true)
+                    _select2 = question_A2[i].value;
+            }
+            for(var i=0;i<question_A3.length;i++){
+                if(question_A3[i].checked==true)
+                    _select3 = question_A3[i].value;
+            }
+        
+            if(web3.personal.unlockAccount(_respondent, _password, 0)){
+            vc.addAnswer.sendTransaction(_respondent, _select1,_select2,_select3, {from:_respondent},
+            function(err,result){ 
+                if(!err){
+                     alert("트랜잭션이 성공적으로 전송되었습니다.\n"+result);
+                     location.reload();
+                }
+            });
+            
+            }
+                    
+        }
+    }
+
+    $( function() {
+        $( "#accordion" ).accordion();
+    } );
+</script>
+<style>
+table {    border-collapse: collapse;    border: 4px solid #bbb;    width: 100%;}
+tr:nth-child(even){background-color: #ccc}
+td, h1 {    padding: 8px;    text-align: left;}
+input, select {
+    padding: 6px 10px;
+    margin: 4px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+button:hover {  background-color: gold;}
+</style>
+</head>
+
+    <body onload="makeSelect();">
+        <img src="./resource/main.jpg"/>
+        <h1>Inho Survey Bussiness Platfrom [김정우 이성언 이재영 임정인]</h1>
+
+        <div id="tablePlace"></div>
+        
+        <button onClick="refreshBalance();">잔고조회</button>
+        
+        <div>
+            <h4>설문의뢰자<select id="client"></select></h4>
+            <input type="text" id="price" value="의뢰가격" onfocus="this.value=''">
+            <input type="text" id="participants" value="설문자수"  onfocus="this.value=''">
+            <button onClick="commission()">의뢰하기</button>
+        </div>
+        
+        <div id="accordion">
+            <h3>Question No.1</h3>
+            <div id="sur1">
+                <div>
+                    Question <input type="text" id="question1" maxlength = "32" size = "50" value="">
+                </div>
+                <div>
+                    Example <input type="text" id="example11" maxlength = "32" size = "50" value="">
+                </div>
+                <div>
+                    Example <input type="text" id="example12" maxlength = "32" size = "50" value="">
+                </div>
+                <div>
+                    Example <input type="text" id="example13" maxlength = "32" size = "50" value="">
+                </div>
+            </div>
+            <h3>Question No.2</h3>
+            <div id="sur2" style="display:none">
+                <div>
+                    문제 : <input type="text" id="question2" maxlength = "32" size = "50" value="">
+                </div>
+                <div>
+                    보기 : <input type="text" id="example21" maxlength = "32" size = "50" value="">
+                </div>
+                <div>
+                    보기 : <input type="text" id="example22" maxlength = "32" size = "50" value="">
+                </div>
+                <div>
+                    보기 : <input type="text" id="example23" maxlength = "32" size = "50" value="">
+                </div>
+            </div>
+            <h3>Question No.3</h3>
+            <div id="sur3" style="display:none">
+                <div>
+                    문제 : <input type="text" id="question3" maxlength = "32" size = "50" value="">
+                </div>
+                <div>
+                    보기 : <input type="text" id="example31" maxlength = "32" size = "50" value="">
+                </div>
+                <div>
+                    보기 : <input type="text" id="example32" maxlength = "32" size = "50" value="">
+                </div>
+                <div>
+                    보기 : <input type="text" id="example33" maxlength = "32" size = "50" value="">
+                </div>
+            </div>
+        </div>
+        <div>
+            <button onClick="addSurvey()">설문만들기</button>
+        </div>
+
+        <h4>---------------------------------------------------</h4>
+        <h4>설문자  <select id="respondent" onChange="refreshQuestion()"></select></h4>
+            패스워드 : <input type = "password" id ="pass">
+        <div id="Question1"></div>
+        <div id="Question2"></div>
+        <div id="Question3"></div>
+        <br>
+        <div id="answerDone"></div>
+        <h4>---------------------------------------------------</h4>
+        <button onClick="javascript:getAnswer()">설문 결과보기</button>   
+        <div id="Answer0"></div>
+        <div id="Answer1"></div>
+        <div id="Answer2"></div>
+        <script>
+            refreshBalance();
+            makeSelect(); 
+        </script>
+    </body>
+</html>
